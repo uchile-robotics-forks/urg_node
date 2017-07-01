@@ -122,6 +122,7 @@ private:
   double diagnostics_tolerance_;
   double diagnostics_window_time_;
   bool detailed_status_;
+  bool no_range_as_inf_;
 
   volatile bool service_yield_;
 

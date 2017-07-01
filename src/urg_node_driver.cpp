@@ -80,6 +80,7 @@ void UrgNode::initSetup()
   pnh_.param<double>("diagnostics_tolerance", diagnostics_tolerance_, 0.05);
   pnh_.param<double>("diagnostics_window_time", diagnostics_window_time_, 5.0);
   pnh_.param<bool>("get_detailed_status", detailed_status_, false);
+  pnh_.param<bool>("no_range_as_inf", no_range_as_inf_, false);
 
   // Set up publishers and diagnostics updaters, we only need one
   if (publish_multiecho_)
@@ -366,11 +367,11 @@ bool UrgNode::connect()
     urg_.reset();  // Clear any previous connections();
     if (!ip_address_.empty())
     {
-      urg_.reset(new urg_node::URGCWrapper(ip_address_, ip_port_, publish_intensity_, publish_multiecho_));
+      urg_.reset(new urg_node::URGCWrapper(ip_address_, ip_port_, publish_intensity_, publish_multiecho_, no_range_as_inf_)); 
     }
     else
     {
-      urg_.reset(new urg_node::URGCWrapper(serial_baud_, serial_port_, publish_intensity_, publish_multiecho_));
+      urg_.reset(new urg_node::URGCWrapper(serial_baud_, serial_port_, publish_intensity_, publish_multiecho_, no_range_as_inf_)); 
     }
 
     std::stringstream ss;

@@ -41,7 +41,7 @@
 namespace urg_node
 {
 
-URGCWrapper::URGCWrapper(const std::string& ip_address, const int ip_port, bool& using_intensity, bool& using_multiecho)
+URGCWrapper::URGCWrapper(const std::string& ip_address, const int ip_port, bool& using_intensity, bool& using_multiecho, bool &no_range_as_inf)
 {
   // Store for comprehensive diagnostics
   ip_address_ = ip_address;
@@ -63,11 +63,11 @@ URGCWrapper::URGCWrapper(const std::string& ip_address, const int ip_port, bool&
     throw std::runtime_error(ss.str());
   }
 
-  initialize(using_intensity, using_multiecho);
+  initialize(using_intensity, using_multiecho, no_range_as_inf); 
 }
 
 URGCWrapper::URGCWrapper(const int serial_baud, const std::string& serial_port,
-    bool& using_intensity, bool& using_multiecho)
+    bool& using_intensity, bool& using_multiecho, bool &no_range_as_inf)
 {
   // Store for comprehensive diagnostics
   serial_baud_ = serial_baud;
@@ -90,10 +90,10 @@ URGCWrapper::URGCWrapper(const int serial_baud, const std::string& serial_port,
     throw std::runtime_error(ss.str());
   }
 
-  initialize(using_intensity, using_multiecho);
+  initialize(using_intensity, using_multiecho, no_range_as_inf); 
 }
 
-void URGCWrapper::initialize(bool& using_intensity, bool& using_multiecho)
+void URGCWrapper::initialize(bool& using_intensity, bool& using_multiecho, bool &no_range_as_inf)
 {
   int urg_data_size = urg_max_data_size(&urg_);
   // urg_max_data_size can return a negative, error code value. Resizing based on this value will fail.
@@ -136,6 +136,7 @@ void URGCWrapper::initialize(bool& using_intensity, bool& using_multiecho)
   use_intensity_ = using_intensity;
   use_multiecho_ = using_multiecho;
 
+  no_range_as_inf_ = no_range_as_inf; 
   measurement_type_ = URG_DISTANCE;
   if (use_intensity_ && use_multiecho_)
   {
@@ -237,8 +238,12 @@ bool URGCWrapper::grabScan(const sensor_msgs::LaserScanPtr& msg)
     }
     else
     {
-      msg->ranges[i] = std::numeric_limits<float>::quiet_NaN();
-      continue;
+      if(no_range_as_inf_){
+        msg->ranges[i] = std::numeric_limits<float>::infinity();
+      }
+      else{
+        msg->ranges[i] = std::numeric_limits<float>::quiet_NaN();
+      }
     }
   }
   return true;

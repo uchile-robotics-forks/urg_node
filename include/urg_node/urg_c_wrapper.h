@@ -89,9 +89,9 @@ public:
 class URGCWrapper
 {
 public:
-  URGCWrapper(const std::string& ip_address, const int ip_port, bool& using_intensity, bool& using_multiecho);
+  URGCWrapper(const std::string& ip_address, const int ip_port, bool& using_intensity, bool& using_multiecho, bool &no_range_as_inf); 
 
-  URGCWrapper(const int serial_baud, const std::string& serial_port, bool& using_intensity, bool& using_multiecho);
+  URGCWrapper(const int serial_baud, const std::string& serial_port, bool& using_intensity, bool& using_multiecho, bool &no_range_as_inf); 
 
   ~URGCWrapper();
 
@@ -166,7 +166,7 @@ public:
   bool getDL00Status(UrgDetectionReport& report);
 
 private:
-  void initialize(bool& using_intensity, bool& using_multiecho);
+  void initialize(bool& using_intensity, bool& using_multiecho, bool &no_range_as_inf); 
 
   bool isIntensitySupported();
 
@@ -204,6 +204,7 @@ private:
 
   bool use_intensity_;
   bool use_multiecho_;
+  bool no_range_as_inf_; 
   urg_measurement_type_t measurement_type_;
   int first_step_;
   int last_step_;
